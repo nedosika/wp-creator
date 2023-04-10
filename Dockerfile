@@ -4,6 +4,8 @@ FROM node:18
 # Set the working directory in the container
 WORKDIR /app
 
+EXPOSE 3000/tcp
+
 # Copy the application files into the working directory
 COPY . /app
 
