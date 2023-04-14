@@ -12,25 +12,25 @@ const port = CONFIG.PORT || 5001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors({
-    credentials: true,
-    origin: CONFIG.CLIENT_URL
-}));
-app.use(cookieParser());
+// app.use(cors({
+//     credentials: true,
+//     origin: CONFIG.CLIENT_URL
+// }));
+// app.use(cookieParser());
 
-// app.get('/', (req, res) => {
-//     res.send('Hello World!!!')
-// })
+app.get('/', (req, res) => {
+    res.send('Hello World!!!')
+})
 
-if (CONFIG.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "client/build")));
-}
-
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "/client/build/index.html"));
-});
-
-console.log(CONFIG)
+// if (CONFIG.NODE_ENV === "production") {
+//     app.use(express.static(path.join(__dirname, "client/build")));
+// }
+//
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "/client/build/index.html"));
+// });
+//
+// console.log(CONFIG)
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
