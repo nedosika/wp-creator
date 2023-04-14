@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import CONFIG from "./config.js";
 
 const app = express();
-const port = CONFIG.PORT;
+const port = CONFIG.PORT || 5001;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
