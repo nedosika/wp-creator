@@ -2,12 +2,12 @@
 FROM node:18
 
 # Set the working directory in the container
-#WORKDIR /app
+WORKDIR /app
 
 EXPOSE 3000/tcp
 
 # Copy the application files into the working directory
-#COPY . /app
+COPY . /app
 
 # Install the application dependencies
 RUN npm install
