@@ -18,19 +18,16 @@ const __dirname = path.dirname(__filename);
 // }));
 // app.use(cookieParser());
 
-app.get('/', (req, res) => {
-    res.send('Hello World!!!')
-})
+// app.get('/', (req, res) => {
+//     res.send('Hello World!!!')
+// })
 
-// if (CONFIG.NODE_ENV === "production") {
-//     app.use(express.static(path.join(__dirname, "client/build")));
-// }
-//
-// app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "/client/build/index.html"));
-// });
-//
-// console.log(CONFIG)
+
+app.use(express.static(path.join(__dirname, "client/build")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "/client/build/index.html"));
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
