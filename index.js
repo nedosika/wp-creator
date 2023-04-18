@@ -18,9 +18,9 @@ const __dirname = path.dirname(__filename);
 // }));
 // app.use(cookieParser());
 
-// app.get('/', (req, res) => {
-//     res.send('Hello World!!!')
-// })
+app.get('/api/v1/test', (req, res) => {
+    res.send('Hello World!!!')
+})
 
 
 app.use(express.static(path.join(__dirname, "client/build")));
