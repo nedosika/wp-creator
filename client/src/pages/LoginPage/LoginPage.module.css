@@ -8,3 +8,7 @@
     font-size: calc(20px + 3vmin);
     color: white;
 }
+
+.SubmitButton {
+    width: 100%;
+}
