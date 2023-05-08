@@ -1,36 +1,54 @@
-import React, { useCallback, useMemo, useState} from 'react';
-import DataGrid, {SelectColumn} from 'react-data-grid';
-import 'react-data-grid/lib/styles.css';
-import {Progress} from "antd";
+import React, { useState} from 'react';
+import { Resizable } from 'react-resizable';
+import {Progress, Table} from "antd";
 
-const columns = [
-    SelectColumn,
+import "./Dashboard.css";
+
+
+const initialColumns = [
     {
-        name: 'Date',
-        key: 'date',
+        title: 'Date',
+        dataIndex: 'date',
+        width: 100
     },
     {
-        name: 'Name',
-        key: 'name',
+        title: 'Name',
+        dataIndex: 'name',
+        width: 100
     },
     {
-        name: 'Status',
-        key: 'status',
+        title: 'Status',
+        dataIndex: 'status',
+        width: 100,
+        sorter: (a, b) => a.amount - b.amount,
+        filterSearch: true,
+        onFilter: (value, record) => record.name.indexOf(value) === 0,
     },
     {
-        name: "Progress",
-        key: 'progress',
-        formatter: ({row: {progress}}) => <Progress percent={progress} size="small"/>
+        title: "Progress",
+        dataIndex: 'progress',
+        width: 100,
+        render: (props) => {
+            console.log(props)
+            return <Progress percent={props} size="small"/>;
+        },
     },
     {
-        name: 'End Date',
-        key: 'end_date',
+        title: 'End Date',
+        dataIndex: 'end_date',
+        width: 100
+    },
+    {
+        title: 'Action',
+        dataIndex: 'action',
+        render: () => <a>Delete</a>,
+        width: 100
     },
 ];
 
 const rows = [
     {
-        id: '1',
+        key: 0,
         name: 'nedosika.pp.ua',
         date: '01.02.2023',
         status: 'start',
@@ -38,7 +56,7 @@ const rows = [
         end_date: '01.02.2023',
     },
     {
-        id: '2',
+        key: 1,
         name: 'Jim Green',
         date: '01.02.2023',
         status: 'start',
@@ -46,7 +64,7 @@ const rows = [
         end_date:'01.02.2023',
     },
     {
-        id: '3',
+        key: 2,
         name: 'Joe Black',
         date: '01.02.2023',
         status: 'start',
@@ -55,49 +73,77 @@ const rows = [
     },
 ];
 
-const Dashboard = () => {
-    const [selectedRows, setSelectedRows] = useState(() => new Set());
-    const [sortColumns, setSortColumns] = useState([]);
+const ResizableTitle = (props) => {
+    const { onResize, width, ...restProps } = props;
+    if (!width) {
+        return <th {...restProps} />;
+    }
 
-    const onSortColumnsChange = useCallback((sortColumns) => {
-        setSortColumns(sortColumns.slice(-1));
-    }, []);
-
-    const sortedRows = useMemo(() => {
-        if (sortColumns.length === 0) return rows;
-        const { columnKey, direction } = sortColumns[0];
-
-        let sortedRows = [...rows];
-
-        switch (columnKey) {
-            case 'name':
-                sortedRows = sortedRows.sort((a, b) => a[columnKey].localeCompare(b[columnKey]));
-                break;
-            default:
-        }
-        return direction === 'DESC' ? sortedRows.reverse() : sortedRows;
-    }, [sortColumns]);
 
     return (
-                <DataGrid
-                    columns={columns}
-                    rows={sortedRows}
-                    selectedRows={selectedRows}
-                    onSelectedRowsChange={setSelectedRows}
-                    sortColumns={sortColumns}
-                    onSortColumnsChange={onSortColumnsChange}
-                    defaultColumnOptions={{
-                        sortable: true,
-                        resizable: true
+        <Resizable
+            width={width}
+            height={0}
+            handle={
+                <span
+                    className="react-resizable-handle"
+                    onClick={(e) => {
+                        e.stopPropagation();
                     }}
-                    onCellClick={(args, event) => {
-                        if (args.column.key === 'name') {
-                            event.preventGridDefault();
-                            args.selectCell(true);
-                        }
-                    }}
-                    rowKeyGetter={(row) => row.id}
                 />
+            }
+            onResize={onResize}
+            draggableOpts={{
+                enableUserSelectHack: false,
+            }}
+        >
+            <th {...restProps} />
+        </Resizable>
+    );
+};
+
+const Dashboard = () => {
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [columns, setColumns] = useState(initialColumns);
+    const onSelectChange = (newSelectedRowKeys) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+    };
+
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+    };
+    const handleResize =
+        (index) =>
+            (_, { size }) => {
+                const newColumns = [...columns];
+                newColumns[index] = {
+                    ...newColumns[index],
+                    width: size.width,
+                };
+                setColumns(newColumns);
+            };
+
+    const mergeColumns = columns.map((col, index) => ({
+        ...col,
+        onHeaderCell: (column) => ({
+            width: column.width,
+            onResize: handleResize(index),
+        }),
+    }));
+
+    return (
+        <Table
+            bordered
+            components={{
+                header: {
+                    cell: ResizableTitle,
+                },
+            }}
+            columns={mergeColumns}
+            dataSource={rows}
+            rowSelection={rowSelection}
+        />
     );
 }
 
