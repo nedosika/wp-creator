@@ -9,7 +9,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "styled-components": "6.0.0-rc.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@ant-design/icons": "^5.0.1",
     "antd": "^5.4.2",
-    "react-router-dom": "^6.10.0"
+    "react-router-dom": "^6.10.0",
+    "react-data-grid": "^7.0.0-beta.30"
   }
 }
