@@ -3,14 +3,14 @@ import {encode as base64_encode} from 'base-64';
 import SiteMap from "components/Accordion/SiteMap";
 import Title from "components/Accordion/Title";
 import Categories from "components/Accordion/Categories";
-import React from "react";
+import React, {createContext, useCallback, useContext, useMemo} from "react";
 import {useDialog} from "contexts/Dialog";
 import WordpressSettings from "components/Accordion/WordpressSettings";
 import {useMutation} from "@apollo/client";
 import {CREATE_TASK} from "apollo/mutations";
 import {useState} from "react";
 
-const { Panel } = Collapse;
+const {Panel} = Collapse;
 
 export const TASK_OPTIONS = {
     wordpressApiUrl: 'wordpressApiUrl',
@@ -63,12 +63,14 @@ const initialState = {
     [TASK_OPTIONS.posts]: []
 }
 
+const TaskContext = createContext({});
+
 const TaskDialog = () => {
     const [task, setTask] = useState(initialState);
     const [createTask, {data, loading, error}] = useMutation(CREATE_TASK);
     const {closeDialog} = useDialog();
 
-    const variables = {
+    const variables = useMemo(() => ({
         task: {
             name: task[TASK_OPTIONS.wordpressApiUrl],
             categories: {
@@ -97,45 +99,39 @@ const TaskDialog = () => {
             },
             timeout: task[TASK_OPTIONS.timeout]
         },
-    };
+    }), [task]);
 
-    const handleChangeTask = (newTask) => {
-        setTask((prevTask) => ({...prevTask, ...newTask}))
-    }
+    const updateTask = useCallback((newTask) => setTask((prevTask) => ({...prevTask, ...newTask})), []);
 
-    const handleCreateTask = () => {
-        createTask({
-            variables
-        }).then(closeDialog);
-    }
+    const handleCreateTask = useCallback(() => createTask({variables}).then(closeDialog), []);
 
     return (
-        <Modal
-            title="Create task dialog"
-            centered
-            open
-            onOk={handleCreateTask}
-            onCancel={closeDialog}
-        >
-            <Collapse accordion>
-                <Panel header="Sitemap" key="1">
-                    <SiteMap
-                        onlyHtml={task[TASK_OPTIONS.onlyHtml]}
-                        onChange={handleChangeTask}
-                    />
-                </Panel>
-                <Panel header="Title" key="2">
-                    <Title/>
-                </Panel>
-                <Panel header="Categories" key="3">
-                    <Categories/>
-                </Panel>
-                <Panel header="Wordpress settings" key="4">
-                    <WordpressSettings/>
-                </Panel>
-            </Collapse>
-        </Modal>
+        <TaskContext.Provider value={[task, updateTask]}>
+            <Modal
+                title="Create task dialog"
+                centered
+                open
+                onOk={handleCreateTask}
+                onCancel={closeDialog}
+            >
+                <Collapse accordion>
+                    <Panel header="Sitemap" key="1">
+                        <SiteMap/>
+                    </Panel>
+                    <Panel header="Title" key="2">
+                        <Title/>
+                    </Panel>
+                    <Panel header="Categories" key="3">
+                        <Categories/>
+                    </Panel>
+                    <Panel header="Wordpress settings" key="4">
+                        <WordpressSettings/>
+                    </Panel>
+                </Collapse>
+            </Modal>
+        </TaskContext.Provider>
     );
 };
 
+export const useTask = () => useContext(TaskContext);
 export default TaskDialog;

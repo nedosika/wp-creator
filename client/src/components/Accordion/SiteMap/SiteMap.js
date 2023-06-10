@@ -2,10 +2,12 @@ import React from 'react';
 import {Button, Checkbox, Upload, message, Space} from "antd";
 import {UploadOutlined} from "@ant-design/icons";
 import fileParser from "services/fileParser";
-import {TASK_OPTIONS} from "dialogs/TaskDialog";
+import {TASK_OPTIONS, useTask} from "dialogs/TaskDialog";
 
-const SiteMap = ({onlyHtml, onChange}) => {
-    const handleChange = (event) => onChange({
+const SiteMap = () => {
+    const [{[TASK_OPTIONS.onlyHtml]: onlyHtml}, updateTask] = useTask();
+
+    const handleChangeOlyHtml = (event) => updateTask({
             [TASK_OPTIONS.onlyHtml]: event.target.checked
         })
 
@@ -15,7 +17,7 @@ const SiteMap = ({onlyHtml, onChange}) => {
                 const filteredUrls = urls.filter((url) => onlyHtml ? url.includes('.html') : true
                 ).filter((url) => !url.includes('?'));
 
-                onChange({[TASK_OPTIONS.urls]: filteredUrls });
+                updateTask({[TASK_OPTIONS.urls]: filteredUrls });
 
                 message.info(`Loaded ${filteredUrls.length} url(s)`);
 
@@ -25,7 +27,7 @@ const SiteMap = ({onlyHtml, onChange}) => {
 
     return (
         <Space direction='vertical'>
-            <Checkbox onChange={handleChange} checked={onlyHtml}>Only .html</Checkbox>
+            <Checkbox onChange={handleChangeOlyHtml} checked={onlyHtml}>Only .html</Checkbox>
             <Upload name="file" customRequest={handleRequest} maxCount={1}>
                 <Button icon={<UploadOutlined />}>File</Button>
             </Upload>
