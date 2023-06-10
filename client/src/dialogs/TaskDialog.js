@@ -1,50 +1,50 @@
 import {Collapse, Modal} from "antd";
 import {encode as base64_encode} from 'base-64';
-import SiteMap from "../components/Accordion/SiteMap";
-import Title from "../components/Accordion/Title";
-import Categories from "../components/Accordion/Categories";
+import SiteMap from "components/Accordion/SiteMap";
+import Title from "components/Accordion/Title";
+import Categories from "components/Accordion/Categories";
 import React from "react";
-import {TASK_FIELDS, useTasksContext} from "../contexts/TasksContext";
-import {useDialogContext} from "../contexts/DialogsContext";
-import WordpressSettings from "../components/Accordion/WordpressSettings";
+import {SETTINGS, useSettings} from "contexts/Settings";
+import {useDialog} from "contexts/Dialog";
+import WordpressSettings from "components/Accordion/WordpressSettings";
 import {useMutation} from "@apollo/client";
-import {CREATE_TASK} from "../apollo/mutations";
+import {CREATE_TASK} from "apollo/mutations";
 
 const { Panel } = Collapse;
 
 const TaskDialog = () => {
-    const {task} = useTasksContext();
+    const [settings] = useSettings();
     const [createTask, {data, loading, error}] = useMutation(CREATE_TASK);
-    const {closeDialog} = useDialogContext();
+    const {closeDialog} = useDialog();
 
     const variables = {
         task: {
-            name: task[TASK_FIELDS.wordpressApiUrl],
+            name: settings[SETTINGS.wordpressApiUrl],
             categories: {
-                isAdd: task[TASK_FIELDS.isAddCategories]
+                isAdd: settings[SETTINGS.isAddCategories]
             },
             siteMap: {
                 filter: {
-                    onlyHtml: task[TASK_FIELDS.onlyHtml]
+                    onlyHtml: settings[SETTINGS.onlyHtml]
                 },
-                urls: task[TASK_FIELDS.urls]
+                urls: settings[SETTINGS.urls]
             },
             title: {
                 parser: {
-                    regExp: task[TASK_FIELDS.tagTitle],
-                    index: task[TASK_FIELDS.arraysIndex]
+                    regExp: settings[SETTINGS.tagTitle],
+                    index: settings[SETTINGS.arraysIndex]
                 },
                 search: {
-                    isStrong: task[TASK_FIELDS.isStrongSearch],
-                    sortBy: task[TASK_FIELDS.orderBy],
-                    order: task[TASK_FIELDS.order]
+                    isStrong: settings[SETTINGS.isStrongSearch],
+                    sortBy: settings[SETTINGS.orderBy],
+                    order: settings[SETTINGS.order]
                 }
             },
             wordpress: {
-                auth: base64_encode(`${task[TASK_FIELDS.username]}:${task[TASK_FIELDS.password]}`),
-                url: task[TASK_FIELDS.wordpressApiUrl]
+                auth: base64_encode(`${settings[SETTINGS.username]}:${settings[SETTINGS.password]}`),
+                url: settings[SETTINGS.wordpressApiUrl]
             },
-            timeout: task[TASK_FIELDS.timeout]
+            timeout: settings[SETTINGS.timeout]
         },
     };
 

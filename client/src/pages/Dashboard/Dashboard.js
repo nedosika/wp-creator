@@ -4,7 +4,7 @@ import {Button, FloatButton, Progress, Space, Table} from "antd";
 import { PlusOutlined } from '@ant-design/icons';
 
 import "./Dashboard.css";
-import {DIALOGS, useDialogContext} from "../../contexts/DialogsContext";
+import {DIALOGS, useDialog} from "contexts/Dialog";
 
 const initialColumns = [
     {
@@ -102,7 +102,7 @@ const ResizableTitle = (props) => {
 const Dashboard = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
-    const {openDialog} = useDialogContext();
+    const {openDialog} = useDialog();
     const onSelectChange = (newSelectedRowKeys) => {
         setSelectedRowKeys(newSelectedRowKeys);
     };

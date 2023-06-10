@@ -1,9 +1,9 @@
-import AppRouter from "./components/AppRouter/AppRouter";
-import DialogProvider from "./contexts/DialogsContext";
-import TasksProvider from "./contexts/TasksContext";
+import AppRouter from "components/AppRouter/AppRouter";
+import DialogProvider from "contexts/Dialog";
+import TasksProvider from "contexts/Settings";
 import {ApolloProvider} from "@apollo/client";
-import {apolloClient} from "./apollo/client";
-import ErrorBoundary from "./components/ErrorBoundary";
+import {apolloClient} from "apollo/client";
+import ErrorBoundary from "components/ErrorBoundary";
 
 const App = () => (
     <ErrorBoundary>

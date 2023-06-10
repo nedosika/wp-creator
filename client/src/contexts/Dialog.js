@@ -1,5 +1,5 @@
 import {createContext, createElement, useContext, useState} from "react";
-import TaskDialog from "../dialogs/TaskDialog";
+import TaskDialog from "dialogs/TaskDialog";
 
 export const DIALOGS = {
     TaskDialog
@@ -7,7 +7,7 @@ export const DIALOGS = {
 
 const DialogContext = createContext({});
 
-export const useDialogContext = () => useContext(DialogContext);
+export const useDialog = () => useContext(DialogContext);
 
 export const DialogProvider = ({children}) => {
     const [dialogs, setDialogs] = useState([]);
