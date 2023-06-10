@@ -2,12 +2,11 @@ import React from 'react';
 import {Button, Checkbox, Upload, message, Space} from "antd";
 import {UploadOutlined} from "@ant-design/icons";
 import fileParser from "services/fileParser";
-import {SETTINGS, useSettings} from "contexts/Settings";
+import {TASK_OPTIONS} from "dialogs/TaskDialog";
 
-const SiteMap = () => {
-    const [{[SETTINGS.onlyHtml]: onlyHtml}, updateSettings] = useSettings();
-    const handleChange = (event) => updateSettings({
-            [SETTINGS.onlyHtml]: event.target.checked
+const SiteMap = ({onlyHtml, onChange}) => {
+    const handleChange = (event) => onChange({
+            [TASK_OPTIONS.onlyHtml]: event.target.checked
         })
 
     const handleRequest = ({file, onSuccess}) =>
@@ -16,7 +15,7 @@ const SiteMap = () => {
                 const filteredUrls = urls.filter((url) => onlyHtml ? url.includes('.html') : true
                 ).filter((url) => !url.includes('?'));
 
-                updateSettings({[SETTINGS.urls]: filteredUrls });
+                onChange({[TASK_OPTIONS.urls]: filteredUrls });
 
                 message.info(`Loaded ${filteredUrls.length} url(s)`);
 

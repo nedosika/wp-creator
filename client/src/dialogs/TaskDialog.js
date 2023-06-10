@@ -4,49 +4,104 @@ import SiteMap from "components/Accordion/SiteMap";
 import Title from "components/Accordion/Title";
 import Categories from "components/Accordion/Categories";
 import React from "react";
-import {SETTINGS, useSettings} from "contexts/Settings";
 import {useDialog} from "contexts/Dialog";
 import WordpressSettings from "components/Accordion/WordpressSettings";
 import {useMutation} from "@apollo/client";
 import {CREATE_TASK} from "apollo/mutations";
+import {useState} from "react";
 
 const { Panel } = Collapse;
 
+export const TASK_OPTIONS = {
+    wordpressApiUrl: 'wordpressApiUrl',
+    username: 'login',
+    password: 'password',
+    errorsLogs: 'errorsLogs',
+    infoLogs: 'infoLogs',
+    consoleLogs: 'consoleLogs',
+    tagTitle: 'tagTitle',
+    arraysIndex: 'arraysIndex',
+    isAddCategories: 'isAddCategories',
+    isLoading: 'isLoading',
+    progress: 'progress',
+    timeout: 'timeout',
+    logs: 'logs',
+    urls: 'urls',
+    isStrongSearch: 'isStrongSearch',
+    onlyHtml: 'onlyHtml',
+    sortBy: 'sortBy',
+    order: 'order',
+    posts: 'posts'
+}
+
+export const SEARCH_SORTS = {
+    title: 'title',
+    date: 'date'
+}
+
+export const SEARCH_ORDERS = {
+    asc: 'asc',
+    desc: 'desc'
+}
+
+const initialState = {
+    [TASK_OPTIONS.wordpressApiUrl]: '',
+    [TASK_OPTIONS.username]: '',
+    [TASK_OPTIONS.password]: '',
+    [TASK_OPTIONS.tagTitle]: '(?<=>)(.*)(?=<)',
+    [TASK_OPTIONS.arraysIndex]: 0,
+    [TASK_OPTIONS.isAddCategories]: true,
+    [TASK_OPTIONS.progress]: 0,
+    [TASK_OPTIONS.timeout]: 0,
+    [TASK_OPTIONS.logs]: [],
+    [TASK_OPTIONS.urls]: [],
+    [TASK_OPTIONS.isStrongSearch]: false,
+    [TASK_OPTIONS.isLoading]: false,
+    [TASK_OPTIONS.onlyHtml]: true,
+    [TASK_OPTIONS.order]: SEARCH_ORDERS.asc,
+    [TASK_OPTIONS.sortBy]: SEARCH_SORTS.title,
+    [TASK_OPTIONS.posts]: []
+}
+
 const TaskDialog = () => {
-    const [settings] = useSettings();
+    const [task, setTask] = useState(initialState);
     const [createTask, {data, loading, error}] = useMutation(CREATE_TASK);
     const {closeDialog} = useDialog();
 
     const variables = {
         task: {
-            name: settings[SETTINGS.wordpressApiUrl],
+            name: task[TASK_OPTIONS.wordpressApiUrl],
             categories: {
-                isAdd: settings[SETTINGS.isAddCategories]
+                isAdd: task[TASK_OPTIONS.isAddCategories]
             },
             siteMap: {
                 filter: {
-                    onlyHtml: settings[SETTINGS.onlyHtml]
+                    onlyHtml: task[TASK_OPTIONS.onlyHtml]
                 },
-                urls: settings[SETTINGS.urls]
+                urls: task[TASK_OPTIONS.urls]
             },
             title: {
                 parser: {
-                    regExp: settings[SETTINGS.tagTitle],
-                    index: settings[SETTINGS.arraysIndex]
+                    regExp: task[TASK_OPTIONS.tagTitle],
+                    index: task[TASK_OPTIONS.arraysIndex]
                 },
                 search: {
-                    isStrong: settings[SETTINGS.isStrongSearch],
-                    sortBy: settings[SETTINGS.orderBy],
-                    order: settings[SETTINGS.order]
+                    isStrong: task[TASK_OPTIONS.isStrongSearch],
+                    sortBy: task[TASK_OPTIONS.sortBy],
+                    order: task[TASK_OPTIONS.order]
                 }
             },
             wordpress: {
-                auth: base64_encode(`${settings[SETTINGS.username]}:${settings[SETTINGS.password]}`),
-                url: settings[SETTINGS.wordpressApiUrl]
+                auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
+                url: task[TASK_OPTIONS.wordpressApiUrl]
             },
-            timeout: settings[SETTINGS.timeout]
+            timeout: task[TASK_OPTIONS.timeout]
         },
     };
+
+    const handleChangeTask = (newTask) => {
+        setTask((prevTask) => ({...prevTask, ...newTask}))
+    }
 
     const handleCreateTask = () => {
         createTask({
@@ -64,7 +119,10 @@ const TaskDialog = () => {
         >
             <Collapse accordion>
                 <Panel header="Sitemap" key="1">
-                    <SiteMap/>
+                    <SiteMap
+                        onlyHtml={task[TASK_OPTIONS.onlyHtml]}
+                        onChange={handleChangeTask}
+                    />
                 </Panel>
                 <Panel header="Title" key="2">
                     <Title/>

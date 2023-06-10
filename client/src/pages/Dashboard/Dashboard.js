@@ -15,7 +15,15 @@ const initialColumns = [
     {
         title: 'Name',
         dataIndex: 'name',
-        width: 100
+        width: 100,
+        render: (_, record) => {
+            console.log({_, record})
+            return (
+                <Space size="middle">
+                    <a>{record.name}</a>
+                </Space>
+            );
+        },
     },
     {
         title: 'Status',
@@ -72,10 +80,10 @@ const rows = [
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
+
     if (!width) {
         return <th {...restProps} />;
     }
-
 
     return (
         <Resizable
@@ -113,13 +121,13 @@ const Dashboard = () => {
     };
 
     const handleResize = (index) => (_, { size }) => {
-                const newColumns = [...columns];
-                newColumns[index] = {
-                    ...newColumns[index],
-                    width: size.width,
-                };
-                setColumns(newColumns);
-            };
+        const newColumns = [...columns];
+        newColumns[index] = {
+            ...newColumns[index],
+            width: size.width,
+        };
+        setColumns(newColumns);
+    };
 
     const mergeColumns = columns.map((col, index) => ({
         ...col,
@@ -129,7 +137,7 @@ const Dashboard = () => {
         }),
     }));
 
-    const handleOpenDialog = () => openDialog({dialog: DIALOGS.TaskDialog})
+    const handleOpenDialog = () => openDialog({dialog: DIALOGS.Task})
 
     return (
         <>
@@ -147,6 +155,9 @@ const Dashboard = () => {
                 columns={mergeColumns}
                 dataSource={rows}
                 rowSelection={rowSelection}
+                onRow={(record, rowIndex) => ({
+                    onClick: (event) => openDialog({dialog: DIALOGS.Info}),
+                })}
             />
             <FloatButton onClick={handleOpenDialog} shape='circle' icon={<PlusOutlined />} size="large"/>
         </>

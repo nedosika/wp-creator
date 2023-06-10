@@ -1,8 +1,10 @@
 import {createContext, createElement, useContext, useState} from "react";
 import TaskDialog from "dialogs/TaskDialog";
+import InfoDialog from "dialogs/Info";
 
 export const DIALOGS = {
-    TaskDialog
+    Task: TaskDialog,
+    Info: InfoDialog
 }
 
 const DialogContext = createContext({});
