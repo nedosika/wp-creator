@@ -61,6 +61,8 @@ export const useTasksContext = () => useContext(TasksContext);
 const TasksProvider = ({children}) => {
     const [task, setTask] = useState(initialState.task);
 
+    console.log({task})
+
     return <TasksContext.Provider value={{
         task,
         setTask: (field) => setTask((prevState) => ({...prevState, ...field}))
