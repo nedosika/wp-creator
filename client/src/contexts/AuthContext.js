@@ -12,11 +12,11 @@ export const AuthProvider = ({children}) => {
     </AuthContext.Provider>
 }
 
-export const useAuth = () => {
+export const authContext = () => {
     const context = useContext(AuthContext);
 
     if (context === undefined) {
-        throw new Error("useAuth must be used within a AuthProvider");
+        throw new Error("authContext must be used within a AuthProvider");
     }
 
     return context;

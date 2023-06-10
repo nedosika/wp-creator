@@ -4,7 +4,7 @@ import { ApolloServer, gql } from "apollo-server-express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { fileURLToPath } from 'url';
-import { MongoClient, ServerApiVersion }from 'mongodb';
+//import { MongoClient, ServerApiVersion }from 'mongodb';
 import mongoose from "mongoose";
 
 import CONFIG from "./config.js";

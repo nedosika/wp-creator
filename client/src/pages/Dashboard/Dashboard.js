@@ -1,9 +1,10 @@
 import React, { useState} from 'react';
 import { Resizable } from 'react-resizable';
-import {Progress, Table} from "antd";
+import {Button, FloatButton, Progress, Space, Table} from "antd";
+import { PlusOutlined } from '@ant-design/icons';
 
 import "./Dashboard.css";
-
+import {DIALOGS, useDialogContext} from "../../contexts/DialogsContext";
 
 const initialColumns = [
     {
@@ -28,10 +29,7 @@ const initialColumns = [
         title: "Progress",
         dataIndex: 'progress',
         width: 100,
-        render: (props) => {
-            console.log(props)
-            return <Progress percent={props} size="small"/>;
-        },
+        render: (props) => <Progress percent={props} size="small"/>,
     },
     {
         title: 'End Date',
@@ -41,17 +39,16 @@ const initialColumns = [
     {
         title: 'Action',
         dataIndex: 'action',
-        render: () => <a>Delete</a>,
+        render: () => <Space><Button>Edit</Button><Button>Delete</Button><Button>Result</Button></Space>,
         width: 100
     },
 ];
-
 const rows = [
     {
         key: 0,
         name: 'nedosika.pp.ua',
         date: '01.02.2023',
-        status: 'start',
+        status: 'working',
         progress: 10,
         end_date: '01.02.2023',
     },
@@ -59,7 +56,7 @@ const rows = [
         key: 1,
         name: 'Jim Green',
         date: '01.02.2023',
-        status: 'start',
+        status: 'working',
         progress: 20,
         end_date:'01.02.2023',
     },
@@ -67,8 +64,8 @@ const rows = [
         key: 2,
         name: 'Joe Black',
         date: '01.02.2023',
-        status: 'start',
-        progress: 30,
+        status: 'done',
+        progress: 100,
         end_date: '01.02.2023',
     },
 ];
@@ -105,6 +102,7 @@ const ResizableTitle = (props) => {
 const Dashboard = () => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
+    const {openDialog} = useDialogContext();
     const onSelectChange = (newSelectedRowKeys) => {
         setSelectedRowKeys(newSelectedRowKeys);
     };
@@ -113,9 +111,8 @@ const Dashboard = () => {
         selectedRowKeys,
         onChange: onSelectChange,
     };
-    const handleResize =
-        (index) =>
-            (_, { size }) => {
+
+    const handleResize = (index) => (_, { size }) => {
                 const newColumns = [...columns];
                 newColumns[index] = {
                     ...newColumns[index],
@@ -132,18 +129,27 @@ const Dashboard = () => {
         }),
     }));
 
+    const handleOpenDialog = () => openDialog({dialog: DIALOGS.TaskDialog})
+
     return (
-        <Table
-            bordered
-            components={{
-                header: {
-                    cell: ResizableTitle,
-                },
-            }}
-            columns={mergeColumns}
-            dataSource={rows}
-            rowSelection={rowSelection}
-        />
+        <>
+            <Space style={{ marginBottom: 16 }}>
+                <Button>Clear filters</Button>
+                <Button>Clear filters and sorters</Button>
+                <Button onClick={handleOpenDialog}>Add</Button>
+                <Button>Delete</Button>
+            </Space>
+            <Table
+                bordered
+                components={{
+                    header: {cell: ResizableTitle,},
+                }}
+                columns={mergeColumns}
+                dataSource={rows}
+                rowSelection={rowSelection}
+            />
+            <FloatButton onClick={handleOpenDialog} shape='circle' icon={<PlusOutlined />} size="large"/>
+        </>
     );
 }
 
