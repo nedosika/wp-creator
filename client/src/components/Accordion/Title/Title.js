@@ -1,5 +1,5 @@
 import React from 'react';
-import {Checkbox, Form, Input, InputNumber, Select, Space, Switch} from "antd";
+import {Checkbox, Input, InputNumber, Select, Space} from "antd";
 
 const Title = () => {
     return (

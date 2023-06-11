@@ -2,9 +2,11 @@ import React, { useState} from 'react';
 import { Resizable } from 'react-resizable';
 import {Button, FloatButton, Progress, Space, Table} from "antd";
 import { PlusOutlined } from '@ant-design/icons';
+import { useQuery } from '@apollo/client';
 
 import "./Dashboard.css";
 import {DIALOGS, useDialog} from "contexts/Dialog";
+import {GET_TASKS} from "apollo/queries";
 
 const initialColumns = [
     {
@@ -16,14 +18,12 @@ const initialColumns = [
         title: 'Name',
         dataIndex: 'name',
         width: 100,
-        render: (_, record) => {
-            console.log({_, record})
-            return (
+        render: (_, record) =>
+            (
                 <Space size="middle">
-                    <a>{record.name}</a>
+                    {record.name}
                 </Space>
-            );
-        },
+            ),
     },
     {
         title: 'Status',
@@ -49,32 +49,6 @@ const initialColumns = [
         dataIndex: 'action',
         render: () => <Space><Button>Edit</Button><Button>Delete</Button><Button>Result</Button></Space>,
         width: 100
-    },
-];
-const rows = [
-    {
-        key: 0,
-        name: 'nedosika.pp.ua',
-        date: '01.02.2023',
-        status: 'working',
-        progress: 10,
-        end_date: '01.02.2023',
-    },
-    {
-        key: 1,
-        name: 'Jim Green',
-        date: '01.02.2023',
-        status: 'working',
-        progress: 20,
-        end_date:'01.02.2023',
-    },
-    {
-        key: 2,
-        name: 'Joe Black',
-        date: '01.02.2023',
-        status: 'done',
-        progress: 100,
-        end_date: '01.02.2023',
     },
 ];
 
@@ -108,6 +82,7 @@ const ResizableTitle = (props) => {
 };
 
 const Dashboard = () => {
+    const {loading, error, data = {}} = useQuery(GET_TASKS)
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
     const {openDialog} = useDialog();
@@ -139,6 +114,9 @@ const Dashboard = () => {
 
     const handleOpenDialog = () => openDialog({dialog: DIALOGS.Task})
 
+    if(loading)
+        return null;
+
     return (
         <>
             <Space style={{ marginBottom: 16 }}>
@@ -153,8 +131,9 @@ const Dashboard = () => {
                     header: {cell: ResizableTitle,},
                 }}
                 columns={mergeColumns}
-                dataSource={rows}
+                dataSource={data.tasks}
                 rowSelection={rowSelection}
+                rowKey="id"
                 onRow={(record, rowIndex) => ({
                     onClick: (event) => openDialog({dialog: DIALOGS.Info}),
                 })}

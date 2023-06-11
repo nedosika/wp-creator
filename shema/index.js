@@ -11,6 +11,7 @@ export const typeDefs = gql`
   type Task {
     id: ID
     name: String,
+    progress: String,
     status: String,
     sitemap: String,
     description: String,
@@ -28,7 +29,9 @@ export const typeDefs = gql`
 export const resolvers = {
     Query: {
         hello: () => 'Hello world!',
-        tasks: async () => await Task.find({}),
+        tasks: async () => {
+            return await Task.find({});
+        },
         task: async (parent, args) => await Task.findById(args.id),
     },
     Mutation: {

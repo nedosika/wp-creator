@@ -67,7 +67,7 @@ const TaskContext = createContext({});
 
 const TaskDialog = () => {
     const [task, setTask] = useState(initialState);
-    const [createTask, {data, loading, error}] = useMutation(CREATE_TASK);
+    const [createTask] = useMutation(CREATE_TASK);
     const {closeDialog} = useDialog();
 
     const variables = useMemo(() => ({
@@ -103,7 +103,7 @@ const TaskDialog = () => {
 
     const updateTask = useCallback((newTask) => setTask((prevTask) => ({...prevTask, ...newTask})), []);
 
-    const handleCreateTask = useCallback(() => createTask({variables}).then(closeDialog), []);
+    const handleCreateTask = useCallback(() => createTask({variables}).then(closeDialog), [closeDialog, createTask, variables]);
 
     return (
         <TaskContext.Provider value={[task, updateTask]}>

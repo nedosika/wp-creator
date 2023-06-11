@@ -56,6 +56,8 @@ export const errorHandler = ({graphQLErrors, networkError, operation, forward}) 
                             }
                         })();
                     });
+                default:
+                    return;
             }
         }
     }
@@ -63,7 +65,7 @@ export const errorHandler = ({graphQLErrors, networkError, operation, forward}) 
     if (networkError) console.log(`[Network error]: ${networkError}`);
 }
 
-export const httpLink = createHttpLink({uri: config.uri, credentials: 'include'});
+export const httpLink = createHttpLink({uri: config.uri});
 
 export const authLink = setContext((operation, {headers}) => {
     const accessToken = localStorage.getItem("accessToken");

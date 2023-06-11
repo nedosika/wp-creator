@@ -16,9 +16,7 @@ export const GET_TASKS = gql`
         tasks{
             id
             name
-            status {
-                start
-            }
+            progress
         }
     }
 `;
