@@ -7,4 +7,5 @@ export const Task = mongoose.model("Tasks", {
     sitemap: String,
     description: String,
     result: String,
+    timeout: Number
 })

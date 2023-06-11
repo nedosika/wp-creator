@@ -23,7 +23,7 @@ export const SIGN_OUT = gql`
 export const CREATE_TASK = gql`   
     mutation createTask($task: TaskInput) {
         createTask(task: $task) {
-            name            
+            id
         }
     }
 `
@@ -32,6 +32,13 @@ export const DELETE_TASK = gql`
     mutation deleteTask($id: ID!) {
         deleteTask(id: $id){
             name
+        }
+    }
+`
+export const UPDATE_TASK = gql`
+    mutation updateTask($id: ID!, $task: TaskInput) {
+        updateTask(id: $id, task: $task){
+            id
         }
     }
 `

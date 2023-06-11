@@ -3,24 +3,51 @@ import {gql} from "apollo-server-express";
 import {Task} from "../models/Tasks.js";
 
 export const typeDefs = gql`
+  input TaskInput {
+    arraysIndex: Int
+    auth: String
+    description: String
+    isAddCategories: Boolean
+    isStrongSearch: Boolean
+    name: String
+    onlyHtml: Boolean
+    order: String
+    sitemap: String
+    sortBy: String
+    status: String
+    tagTitle: String
+    timeout: Int
+    url: String
+    urls: [String]
+  }
+  type Task {
+    id: ID,
+    arraysIndex: Int
+    auth: String
+    description: String
+    isAddCategories: Boolean
+    isStrongSearch: Boolean
+    name: String
+    onlyHtml: Boolean
+    order: String
+    sitemap: String
+    sortBy: String
+    status: String
+    tagTitle: String
+    timeout: Int
+    url: String
+    urls: [String]
+    progress: Int
+  }
   type Query {
     hello: String
     tasks: [Task]
     task(id: ID): Task 
   }
-  type Task {
-    id: ID
-    name: String,
-    progress: String,
-    status: String,
-    sitemap: String,
-    description: String,
-    result: String,
-  }
   type Mutation {
-    create(name: String): Task
-    update(id: ID, name: String): Task
-    delete(id: ID): Task
+    createTask(task: TaskInput): Task
+    updateTask(id: ID, task: TaskInput): Task
+    deleteTask(id: ID): Task
   }
 `;
 
@@ -35,15 +62,14 @@ export const resolvers = {
         task: async (parent, args) => await Task.findById(args.id),
     },
     Mutation: {
-        create: async (parent, args) => {
-            const { name } = args;
-            const newTask = new Task({
-                name,
-            });
+        createTask: async (parent, args) => {
+            console.log({parent, args})
+            const { task } = args;
+            const newTask = new Task(task);
             await newTask.save();
             return newTask;
         },
-        update: async (parent, args) => {
+        updateTask: async (parent, args) => {
             const { id } = args;
             const updatedTask = await Task.findByIdAndUpdate(id, args);
             if (!updatedTask) {
@@ -51,7 +77,7 @@ export const resolvers = {
             }
             return updatedTask;
         },
-        delete: async (parent, args) => {
+        deleteTask: async (parent, args) => {
             const { id } = args;
             const deletedTask = await Task.findByIdAndDelete(id);
             if (!deletedTask) {

@@ -9,6 +9,7 @@ import WordpressSettings from "components/Accordion/WordpressSettings";
 import {useMutation} from "@apollo/client";
 import {CREATE_TASK} from "apollo/mutations";
 import {useState} from "react";
+import {GET_TASKS} from "../apollo/queries";
 
 const {Panel} = Collapse;
 
@@ -67,43 +68,32 @@ const TaskContext = createContext({});
 
 const TaskDialog = () => {
     const [task, setTask] = useState(initialState);
-    const [createTask] = useMutation(CREATE_TASK);
+    const [createTask] = useMutation(CREATE_TASK, {refetchQueries: [GET_TASKS]});
     const {closeDialog} = useDialog();
 
     const variables = useMemo(() => ({
         task: {
             name: task[TASK_OPTIONS.wordpressApiUrl],
-            categories: {
-                isAdd: task[TASK_OPTIONS.isAddCategories]
-            },
-            siteMap: {
-                filter: {
-                    onlyHtml: task[TASK_OPTIONS.onlyHtml]
-                },
-                urls: task[TASK_OPTIONS.urls]
-            },
-            title: {
-                parser: {
-                    regExp: task[TASK_OPTIONS.tagTitle],
-                    index: task[TASK_OPTIONS.arraysIndex]
-                },
-                search: {
-                    isStrong: task[TASK_OPTIONS.isStrongSearch],
-                    sortBy: task[TASK_OPTIONS.sortBy],
-                    order: task[TASK_OPTIONS.order]
-                }
-            },
-            wordpress: {
-                auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
-                url: task[TASK_OPTIONS.wordpressApiUrl]
-            },
+            isAddCategories: task[TASK_OPTIONS.isAddCategories],
+            onlyHtml: task[TASK_OPTIONS.onlyHtml],
+            urls: task[TASK_OPTIONS.urls],
+            tagTitle: task[TASK_OPTIONS.tagTitle],
+            arraysIndex: task[TASK_OPTIONS.arraysIndex],
+            isStrongSearch: task[TASK_OPTIONS.isStrongSearch],
+            sortBy: task[TASK_OPTIONS.sortBy],
+            order: task[TASK_OPTIONS.order],
+            auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
+            url: task[TASK_OPTIONS.wordpressApiUrl],
             timeout: task[TASK_OPTIONS.timeout]
-        },
+        }
     }), [task]);
 
     const updateTask = useCallback((newTask) => setTask((prevTask) => ({...prevTask, ...newTask})), []);
 
-    const handleCreateTask = useCallback(() => createTask({variables}).then(closeDialog), [closeDialog, createTask, variables]);
+    const handleCreateTask = useCallback(() => {
+        console.log(variables)
+        return createTask({variables}).then(closeDialog);
+    }, [closeDialog, createTask, variables]);
 
     return (
         <TaskContext.Provider value={[task, updateTask]}>
