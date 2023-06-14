@@ -3,8 +3,13 @@ import { ObjectView } from 'react-object-view'
 
 import React from "react";
 import {useDialog} from "contexts/Dialog";
+import {useQuery} from "@apollo/client";
+import {GET_TASK} from "../apollo/queries";
 
 const InfoDialog = () => {
+    const { data = {}} = useQuery(GET_TASK, {
+        variables: { id: "27" },
+    });
     const {closeDialog} = useDialog();
 
     return (
@@ -15,7 +20,7 @@ const InfoDialog = () => {
             onOk={closeDialog}
             onCancel={closeDialog}
         >
-            <ObjectView data={{}}/>
+            <ObjectView data={data}/>
         </Modal>
     );
 }

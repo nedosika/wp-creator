@@ -72,7 +72,7 @@ const TaskDialog = () => {
     const {closeDialog} = useDialog();
 
     const variables = useMemo(() => ({
-        task: {
+        data: {
             name: task[TASK_OPTIONS.wordpressApiUrl],
             isAddCategories: task[TASK_OPTIONS.isAddCategories],
             onlyHtml: task[TASK_OPTIONS.onlyHtml],
@@ -83,7 +83,7 @@ const TaskDialog = () => {
             sortBy: task[TASK_OPTIONS.sortBy],
             order: task[TASK_OPTIONS.order],
             auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
-            url: task[TASK_OPTIONS.wordpressApiUrl],
+            wordpressApiUrl: task[TASK_OPTIONS.wordpressApiUrl],
             timeout: task[TASK_OPTIONS.timeout]
         }
     }), [task]);

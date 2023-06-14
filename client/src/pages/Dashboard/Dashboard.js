@@ -10,6 +10,14 @@ import {GET_TASKS} from "apollo/queries";
 
 const initialColumns = [
     {
+        title: 'ID',
+        dataIndex: 'id',
+        width: 100,
+        sorter: (a, b) => a.id - b.id,
+        filterSearch: true,
+        onFilter: (value, record) => record.name.indexOf(value) === 0,
+    },
+    {
         title: 'Date',
         dataIndex: 'date',
         width: 100
@@ -82,7 +90,7 @@ const ResizableTitle = (props) => {
 };
 
 const Dashboard = () => {
-    const {loading, error, data = {}} = useQuery(GET_TASKS)
+    const {loading, error, data = {}} = useQuery(GET_TASKS);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
     const {openDialog} = useDialog();

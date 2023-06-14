@@ -17,28 +17,16 @@ export const GET_TASKS = gql`
             id
             name
             progress
+            urls
         }
     }
 `;
 
-export const GET_TASK = gql`query getTask($id: ID!){
-    task(id: $id){
-        name
-        status {
-            start
-        }
-        report {
-            errors {
-                url 
-                error
-            }
-            posts {
-                id,            
-                url
-                slug,
-                title,
-                categories
-            }
-        }
+export const GET_TASK = gql`
+    query Query($id: ID) {
+          task(id: $id) {
+                id
+                urls
+          }
     }
-}`;
+`;
