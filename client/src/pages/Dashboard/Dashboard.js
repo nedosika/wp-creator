@@ -8,58 +8,6 @@ import "./Dashboard.css";
 import {DIALOGS, useDialog} from "contexts/Dialog";
 import {GET_TASKS} from "apollo/queries";
 
-const initialColumns = [
-    {
-        title: 'ID',
-        dataIndex: 'id',
-        width: 100,
-        sorter: (a, b) => a.id - b.id,
-        filterSearch: true,
-        onFilter: (value, record) => record.name.indexOf(value) === 0,
-    },
-    {
-        title: 'Date',
-        dataIndex: 'date',
-        width: 100
-    },
-    {
-        title: 'Name',
-        dataIndex: 'name',
-        width: 100,
-        render: (_, record) =>
-            (
-                <Space size="middle">
-                    {record.name}
-                </Space>
-            ),
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        width: 100,
-        sorter: (a, b) => a.amount - b.amount,
-        filterSearch: true,
-        onFilter: (value, record) => record.name.indexOf(value) === 0,
-    },
-    {
-        title: "Progress",
-        dataIndex: 'progress',
-        width: 100,
-        render: (props) => <Progress percent={props} size="small"/>,
-    },
-    {
-        title: 'End Date',
-        dataIndex: 'end_date',
-        width: 100
-    },
-    {
-        title: 'Action',
-        dataIndex: 'action',
-        render: () => <Space><Button>Edit</Button><Button>Delete</Button><Button>Result</Button></Space>,
-        width: 100
-    },
-];
-
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
 
@@ -90,10 +38,66 @@ const ResizableTitle = (props) => {
 };
 
 const Dashboard = () => {
-    const {loading, error, data = {}} = useQuery(GET_TASKS);
+    const {loading, data = {}} = useQuery(GET_TASKS);
+    const {openDialog} = useDialog();
+
+    const initialColumns = [
+        {
+            title: 'ID',
+            dataIndex: 'id',
+            width: 100,
+            sorter: (a, b) => a.id - b.id,
+            filterSearch: true,
+            onFilter: (value, record) => record.name.indexOf(value) === 0,
+        },
+        {
+            title: 'Date',
+            dataIndex: 'date',
+            width: 100
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            width: 100,
+            render: (_, record) =>
+                (
+                    <Space size="middle">
+                        {record.name}
+                    </Space>
+                ),
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            width: 100,
+            sorter: (a, b) => a.amount - b.amount,
+            filterSearch: true,
+            onFilter: (value, record) => record.name.indexOf(value) === 0,
+        },
+        {
+            title: "Progress",
+            dataIndex: 'progress',
+            width: 100,
+            render: (props) => <Progress percent={props} size="small"/>,
+        },
+        {
+            title: 'End Date',
+            dataIndex: 'end_date',
+            width: 100
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            render: (_, {id}) => {
+                return <Space><Button>Edit</Button><Button onClick={() => openDialog({dialog: DIALOGS.remove, props: {id}})}>Delete</Button><Button>Result</Button></Space>;
+            },
+            width: 100
+        },
+    ];
+
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
-    const {openDialog} = useDialog();
+
     const onSelectChange = (newSelectedRowKeys) => {
         setSelectedRowKeys(newSelectedRowKeys);
     };
@@ -142,9 +146,9 @@ const Dashboard = () => {
                 dataSource={data.tasks}
                 rowSelection={rowSelection}
                 rowKey="id"
-                onRow={(record, rowIndex) => ({
-                    onClick: (event) => openDialog({dialog: DIALOGS.Info}),
-                })}
+                // onRow={(record, rowIndex) => ({
+                //     onClick: (event) => openDialog({dialog: DIALOGS.info}, record),
+                // })}
             />
             <FloatButton onClick={handleOpenDialog} shape='circle' icon={<PlusOutlined />} size="large"/>
         </>

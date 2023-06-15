@@ -67,9 +67,8 @@ export const typeDefs = gql`
   }
   type Mutation {
     createTask(data: TaskInput): String
-    removeTask(id: String): String
+    deleteTask(id: String): String
     updateTask(id: ID, task: TaskInput): Task
-    deleteTask(id: ID): Task
   }
 `;
 export const resolvers = {
@@ -82,13 +81,10 @@ export const resolvers = {
         // },
         tasks: async () => {
             const result = await taskQueue.getJobs([]);
-            console.log(result)
             return result.map((task) => ({id: task.id, ...task.data}))
         },
         task: async (_, args) => {
-            console.log(args)
             const result = await taskQueue.getJob(args.id)
-            console.log({id: result.id, ...result.data})
             return {id: result.id, ...result.data}
         }
     },
@@ -119,7 +115,8 @@ export const resolvers = {
             const {id} = await taskQueue.add(data);
             return id;
         },
-        removeTask: async (_, args) => {
+        deleteTask: async (_, args) => {
+            console.log(args)
             const { id } = args;
             const job = await taskQueue.getJob(id);
 

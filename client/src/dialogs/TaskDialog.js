@@ -91,7 +91,6 @@ const TaskDialog = () => {
     const updateTask = useCallback((newTask) => setTask((prevTask) => ({...prevTask, ...newTask})), []);
 
     const handleCreateTask = useCallback(() => {
-        console.log(variables)
         return createTask({variables}).then(closeDialog);
     }, [closeDialog, createTask, variables]);
 
