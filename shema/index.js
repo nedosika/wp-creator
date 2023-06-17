@@ -1,32 +1,12 @@
 // Construct a schema, using GraphQL schema language
 import {gql} from "apollo-server-express";
-import {Task} from "../models/Tasks.js";
-import Queue from 'bull'
-
-const taskQueue = new Queue('myJobQueue');
-
-// taskQueue.process(function (job, done) {
-//     // transcode image asynchronously and report progress
-//     // job.progress(42);
-//     //
-//     // // call done when finished
-//     // done();
-//     //
-//     // // or give an error if error
-//     // done(new Error('error transcoding'));
-//
-//     // or pass it a result
-//     console.log("job", job.data)
-//     done(null, { width: 1280, height: 720 /* etc... */ });
-//     //
-//     // // If the job throws an unhandled exception it is also handled correctly
-//     // throw new Error('some unexpected error');
-// });
+import taskQueue from "../queues/task.js";
 
 export const typeDefs = gql`
   input TaskInput {
-    arraysIndex: Int
-    auth: String
+    contentSelector: String
+    username: String
+    password: String
     description: String
     isAddCategories: Boolean
     isStrongSearch: Boolean
@@ -36,15 +16,16 @@ export const typeDefs = gql`
     sitemap: String
     sortBy: String
     status: String
-    tagTitle: String
+    titleSelector: String
     timeout: Int
-    wordpressApiUrl: String
+    endpoint: String
     urls: [String]
   }
   type Task {
     id: ID,
-    arraysIndex: Int
-    auth: String
+    contentSelector: String
+    username: String
+    password: String
     description: String
     isAddCategories: Boolean
     isStrongSearch: Boolean
@@ -54,9 +35,9 @@ export const typeDefs = gql`
     sitemap: String
     sortBy: String
     status: String
-    tagTitle: String
+    titleSelector: String
     timeout: Int
-    wordpressApiUrl: String
+    endpoint: String
     urls: [String]
     progress: Int
   }
@@ -116,7 +97,6 @@ export const resolvers = {
             return id;
         },
         deleteTask: async (_, args) => {
-            console.log(args)
             const { id } = args;
             const job = await taskQueue.getJob(id);
 

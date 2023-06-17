@@ -1,7 +1,7 @@
 import {Collapse, Modal} from "antd";
 import {encode as base64_encode} from 'base-64';
 import SiteMap from "components/Accordion/SiteMap";
-import Title from "components/Accordion/Title";
+import Content from "components/Accordion/Content";
 import Categories from "components/Accordion/Categories";
 import React, {createContext, useCallback, useContext, useMemo} from "react";
 import {useDialog} from "contexts/Dialog";
@@ -9,19 +9,16 @@ import WordpressSettings from "components/Accordion/WordpressSettings";
 import {useMutation} from "@apollo/client";
 import {CREATE_TASK} from "apollo/mutations";
 import {useState} from "react";
-import {GET_TASKS} from "../apollo/queries";
+import {GET_TASKS} from "apollo/queries";
 
 const {Panel} = Collapse;
 
 export const TASK_OPTIONS = {
-    wordpressApiUrl: 'wordpressApiUrl',
+    endpoint: 'endpoint',
     username: 'login',
     password: 'password',
-    errorsLogs: 'errorsLogs',
-    infoLogs: 'infoLogs',
-    consoleLogs: 'consoleLogs',
-    tagTitle: 'tagTitle',
-    arraysIndex: 'arraysIndex',
+    titleSelector: 'titleSelector',
+    contentSelector: 'contentSelector',
     isAddCategories: 'isAddCategories',
     isLoading: 'isLoading',
     progress: 'progress',
@@ -46,11 +43,11 @@ export const SEARCH_ORDERS = {
 }
 
 const initialState = {
-    [TASK_OPTIONS.wordpressApiUrl]: '',
+    [TASK_OPTIONS.endpoint]: '',
     [TASK_OPTIONS.username]: '',
     [TASK_OPTIONS.password]: '',
-    [TASK_OPTIONS.tagTitle]: '(?<=>)(.*)(?=<)',
-    [TASK_OPTIONS.arraysIndex]: 0,
+    [TASK_OPTIONS.titleSelector]: 'h1',
+    [TASK_OPTIONS.contentSelector]: 'main',
     [TASK_OPTIONS.isAddCategories]: true,
     [TASK_OPTIONS.progress]: 0,
     [TASK_OPTIONS.timeout]: 0,
@@ -73,17 +70,19 @@ const TaskDialog = () => {
 
     const variables = useMemo(() => ({
         data: {
-            name: task[TASK_OPTIONS.wordpressApiUrl],
+            name: task[TASK_OPTIONS.endpoint],
             isAddCategories: task[TASK_OPTIONS.isAddCategories],
             onlyHtml: task[TASK_OPTIONS.onlyHtml],
             urls: task[TASK_OPTIONS.urls],
-            tagTitle: task[TASK_OPTIONS.tagTitle],
-            arraysIndex: task[TASK_OPTIONS.arraysIndex],
+            titleSelector: task[TASK_OPTIONS.titleSelector],
+            contentSelector: task[TASK_OPTIONS.contentSelector],
             isStrongSearch: task[TASK_OPTIONS.isStrongSearch],
             sortBy: task[TASK_OPTIONS.sortBy],
             order: task[TASK_OPTIONS.order],
-            auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
-            wordpressApiUrl: task[TASK_OPTIONS.wordpressApiUrl],
+            //auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
+            username: task[TASK_OPTIONS.username],
+            password: task[TASK_OPTIONS.password],
+            endpoint: task[TASK_OPTIONS.endpoint],
             timeout: task[TASK_OPTIONS.timeout]
         }
     }), [task]);
@@ -91,6 +90,7 @@ const TaskDialog = () => {
     const updateTask = useCallback((newTask) => setTask((prevTask) => ({...prevTask, ...newTask})), []);
 
     const handleCreateTask = useCallback(() => {
+        console.log(variables)
         return createTask({variables}).then(closeDialog);
     }, [closeDialog, createTask, variables]);
 
@@ -107,8 +107,8 @@ const TaskDialog = () => {
                     <Panel header="Sitemap" key="1">
                         <SiteMap/>
                     </Panel>
-                    <Panel header="Title" key="2">
-                        <Title/>
+                    <Panel header="Content" key="2">
+                        <Content/>
                     </Panel>
                     <Panel header="Categories" key="3">
                         <Categories/>

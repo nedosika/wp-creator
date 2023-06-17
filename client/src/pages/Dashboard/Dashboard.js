@@ -1,12 +1,13 @@
 import React, { useState} from 'react';
 import { Resizable } from 'react-resizable';
-import {Button, FloatButton, Progress, Space, Table} from "antd";
+import {Button, FloatButton, Popconfirm, Progress, Space, Table} from "antd";
 import { PlusOutlined } from '@ant-design/icons';
-import { useQuery } from '@apollo/client';
+import {useMutation, useQuery} from '@apollo/client';
 
 import "./Dashboard.css";
 import {DIALOGS, useDialog} from "contexts/Dialog";
 import {GET_TASKS} from "apollo/queries";
+import {DELETE_TASK} from "../../apollo/mutations";
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -37,11 +38,10 @@ const ResizableTitle = (props) => {
     );
 };
 
-const Dashboard = () => {
-    const {loading, data = {}} = useQuery(GET_TASKS);
-    const {openDialog} = useDialog();
+const useColumns = () => {
+    const [deleteTask] = useMutation(DELETE_TASK, {refetchQueries: [GET_TASKS]});
 
-    const initialColumns = [
+    const columns = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -89,11 +89,30 @@ const Dashboard = () => {
             title: 'Action',
             dataIndex: 'action',
             render: (_, {id}) => {
-                return <Space><Button>Edit</Button><Button onClick={() => openDialog({dialog: DIALOGS.remove, props: {id}})}>Delete</Button><Button>Result</Button></Space>;
+                return (
+                    <Space>
+                        <Popconfirm
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={() => deleteTask({variables: {id}})}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button danger>Delete</Button>
+                        </Popconfirm>
+                    </Space>
+                );
             },
             width: 100
         },
     ];
+
+    return columns;
+}
+const Dashboard = () => {
+    const {openDialog} = useDialog();
+    const {loading, data = {}} = useQuery(GET_TASKS);
+    const initialColumns = useColumns();
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
@@ -124,7 +143,7 @@ const Dashboard = () => {
         }),
     }));
 
-    const handleOpenDialog = () => openDialog({dialog: DIALOGS.Task})
+    const handleOpenDialog = () => openDialog({dialog: DIALOGS.task})
 
     if(loading)
         return null;
