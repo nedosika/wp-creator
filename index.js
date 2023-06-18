@@ -3,7 +3,7 @@ import path from "path";
 import { ApolloServer } from "apollo-server-express";
 import cookieParser from "cookie-parser";
 import { fileURLToPath } from 'url';
-import mongoose from "mongoose";
+//import mongoose from "mongoose";
 
 import CONFIG from "./config.js";
 import {resolvers, typeDefs} from "./shema/index.js";
@@ -15,17 +15,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Database connection
-mongoose
-    .connect(CONFIG.DATABASE_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => {
-        console.log(`Db Connected`);
-    })
-    .catch(err => {
-        console.log(err.message);
-    });
+// mongoose
+//     .connect(CONFIG.DATABASE_URL, {
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true,
+//     })
+//     .then(() => {
+//         console.log(`Db Connected`);
+//     })
+//     .catch(err => {
+//         console.log(err.message);
+//     });
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "client/build")));
 

@@ -2,12 +2,13 @@ import React, { useState} from 'react';
 import { Resizable } from 'react-resizable';
 import {Button, FloatButton, Popconfirm, Progress, Space, Table} from "antd";
 import { PlusOutlined } from '@ant-design/icons';
-import {useMutation, useQuery} from '@apollo/client';
+import {useMutation, useQuery, useSubscription} from '@apollo/client';
 
 import "./Dashboard.css";
 import {DIALOGS, useDialog} from "contexts/Dialog";
 import {GET_TASKS} from "apollo/queries";
-import {DELETE_TASK} from "../../apollo/mutations";
+import {DELETE_TASK} from "apollo/mutations";
+import {TASK_PROGRESS_SUBSCRIPTION} from "apollo/subscriptions";
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -111,8 +112,11 @@ const useColumns = () => {
 }
 const Dashboard = () => {
     const {openDialog} = useDialog();
-    const {loading, data = {}} = useQuery(GET_TASKS);
+    const {loading, data = {}} = useQuery(GET_TASKS, {pollInterval: 500});
+    //const { data: test } = useSubscription(TASK_PROGRESS_SUBSCRIPTION);
     const initialColumns = useColumns();
+
+    //console.log(test)
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
@@ -147,6 +151,8 @@ const Dashboard = () => {
 
     if(loading)
         return null;
+
+    console.log({data})
 
     return (
         <>

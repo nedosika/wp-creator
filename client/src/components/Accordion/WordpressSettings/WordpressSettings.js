@@ -6,6 +6,7 @@ import {TASK_OPTIONS, useTask} from "dialogs/TaskDialog";
 const WordpressSettings = () => {
     const [{
         [TASK_OPTIONS.endpoint]: endpoint,
+        [TASK_OPTIONS.endpointSuffix]: suffix,
         [TASK_OPTIONS.username]: username,
         [TASK_OPTIONS.password]: password
     },  updateTask] = useTask();
@@ -14,7 +15,10 @@ const WordpressSettings = () => {
 
     return (
         <Space direction='vertical'>
-            <Input addonBefore="endpoint" value={endpoint} onChange={handleChange(TASK_OPTIONS.endpoint)}/>
+            <Space.Compact>
+                <Input addonBefore="endpoint" value={endpoint} onChange={handleChange(TASK_OPTIONS.endpoint)}/>
+                <Input value={suffix} onChange={handleChange(TASK_OPTIONS.endpointSuffix)}/>
+            </Space.Compact>
             <Input placeholder="wp login" prefix={<UserOutlined/>} value={username} onChange={handleChange(TASK_OPTIONS.username)}/>
             <Input.Password
                 addonBefore="password"

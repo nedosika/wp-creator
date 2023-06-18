@@ -1,5 +1,4 @@
 import {Collapse, Modal} from "antd";
-import {encode as base64_encode} from 'base-64';
 import SiteMap from "components/Accordion/SiteMap";
 import Content from "components/Accordion/Content";
 import Categories from "components/Accordion/Categories";
@@ -15,6 +14,7 @@ const {Panel} = Collapse;
 
 export const TASK_OPTIONS = {
     endpoint: 'endpoint',
+    endpointSuffix: "endpointSuffix",
     username: 'login',
     password: 'password',
     titleSelector: 'titleSelector',
@@ -43,14 +43,15 @@ export const SEARCH_ORDERS = {
 }
 
 const initialState = {
-    [TASK_OPTIONS.endpoint]: '',
-    [TASK_OPTIONS.username]: '',
+    [TASK_OPTIONS.endpoint]: 'https://userpk.ru/0',
+    [TASK_OPTIONS.endpointSuffix]: '/wp-json',
+    [TASK_OPTIONS.username]: 'admin55',
     [TASK_OPTIONS.password]: '',
     [TASK_OPTIONS.titleSelector]: 'h1',
-    [TASK_OPTIONS.contentSelector]: 'main',
+    [TASK_OPTIONS.contentSelector]: '.post_content',
     [TASK_OPTIONS.isAddCategories]: true,
     [TASK_OPTIONS.progress]: 0,
-    [TASK_OPTIONS.timeout]: 0,
+    [TASK_OPTIONS.timeout]: 4000,
     [TASK_OPTIONS.logs]: [],
     [TASK_OPTIONS.urls]: [],
     [TASK_OPTIONS.isStrongSearch]: false,
@@ -79,10 +80,9 @@ const TaskDialog = () => {
             isStrongSearch: task[TASK_OPTIONS.isStrongSearch],
             sortBy: task[TASK_OPTIONS.sortBy],
             order: task[TASK_OPTIONS.order],
-            //auth: base64_encode(`${task[TASK_OPTIONS.username]}:${task[TASK_OPTIONS.password]}`),
             username: task[TASK_OPTIONS.username],
             password: task[TASK_OPTIONS.password],
-            endpoint: task[TASK_OPTIONS.endpoint],
+            endpoint: `${task[TASK_OPTIONS.endpoint]}${task[TASK_OPTIONS.endpointSuffix]}`,
             timeout: task[TASK_OPTIONS.timeout]
         }
     }), [task]);

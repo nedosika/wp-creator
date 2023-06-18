@@ -1,6 +1,7 @@
 // Construct a schema, using GraphQL schema language
 import {gql} from "apollo-server-express";
-import taskQueue from "../queues/task.js";
+
+import taskQueue, {TASK_PROGRESS_UPDATED, pubSub} from "../queues/task.js";
 
 export const typeDefs = gql`
   input TaskInput {
@@ -51,6 +52,9 @@ export const typeDefs = gql`
     deleteTask(id: String): String
     updateTask(id: ID, task: TaskInput): Task
   }
+  type Subscription {
+    taskProgressUpdated: Task
+  }
 `;
 export const resolvers = {
     Query: {
@@ -62,7 +66,7 @@ export const resolvers = {
         // },
         tasks: async () => {
             const result = await taskQueue.getJobs([]);
-            return result.map((task) => ({id: task.id, ...task.data}))
+            return result.map(({id, data, _progress}) => ({id, ...data, progress: _progress}))
         },
         task: async (_, args) => {
             const result = await taskQueue.getJob(args.id)
@@ -109,4 +113,9 @@ export const resolvers = {
             return id;
         }
     },
+    // Subscription: {
+    //     taskProgressUpdated: {
+    //         subscribe: () => pubSub.asyncIterator(TASK_PROGRESS_UPDATED),
+    //     },
+    // },
 };
