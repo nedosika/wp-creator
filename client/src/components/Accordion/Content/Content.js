@@ -9,8 +9,8 @@ const Content = () => {
 
     return (
         <Space direction='vertical'>
-            <Input addonBefore="TitleSelector" value={titleSelector} onChange={handleChange(TASK_OPTIONS.titleSelector)}/>
-            <Input addonBefore="ContentSelector" value={contentSelector} onChange={handleChange(TASK_OPTIONS.contentSelector)}/>
+            <Input addonBefore="Header selector" value={titleSelector} onChange={handleChange(TASK_OPTIONS.headerSelector)}/>
+            <Input addonBefore="Content Selector" value={contentSelector} onChange={handleChange(TASK_OPTIONS.contentSelector)}/>
             {/*<Checkbox>Strong search</Checkbox>*/}
             {/*<Space>*/}
             {/*    Sort by:*/}

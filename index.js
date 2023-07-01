@@ -2,11 +2,13 @@ import express from 'express';
 import path from "path";
 import { ApolloServer } from "apollo-server-express";
 import cookieParser from "cookie-parser";
+import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
 //import mongoose from "mongoose";
 
 import CONFIG from "./config.js";
 import {resolvers, typeDefs} from "./shema/index.js";
+//import YoastSEO from 'yoastseo';
 
 const app = express();
 const port = CONFIG.PORT || 3000;
@@ -27,6 +29,7 @@ const __dirname = path.dirname(__filename);
 //         console.log(err.message);
 //     });
 app.use(cookieParser());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, "client/build")));
 
 app.get("*", (req, res) => {

@@ -4,6 +4,7 @@ import {JSDOM} from "jsdom";
 import {getSlug} from "../helpers/slug.js";
 import {getCategories} from "../helpers/categories.js";
 import {PubSub} from "graphql-subscriptions";
+
 export const pubSub = new PubSub();
 
 export const TASK_PROGRESS_UPDATED = 'TASK_PROGRESS_UPDATED';
@@ -12,59 +13,75 @@ const taskQueue = new Queue('myJobQueue');
 const delay = (duration) =>
     new Promise(resolve => setTimeout(resolve, duration));
 taskQueue.process(async (job, done) => {
-    const {data: {urls, endpoint, username, password, titleSelector, timeout, contentSelector}} = job;
-    const wp = new WpAPI({ endpoint, username, password });
+    const {data: {urls, endpoint, username, password, headerSelector, timeout, contentSelector}} = job;
+    const wp = new WpAPI({endpoint, username, password});
     const countUrls = urls.length;
 
-    //console.log({job, urls, endpoint, username, password, titleSelector, timeout, contentSelector})
+    console.log({job, urls, endpoint, username, password, headerSelector, timeout, contentSelector})
 
     urls.reduce((p, url, index, arr) => p.then(async (prev) => {
-        job.progress(Math.ceil((index + 1) * 100 / countUrls)).catch((err)=>console.log(err));
-        console.log({progress: Math.ceil((index + 1) * 100 / countUrls) , url, job})
+        job.progress(Math.ceil((index + 1) * 100 / countUrls)).catch((err) => console.log(err));
+        console.log({progress: Math.ceil((index + 1) * 100 / countUrls), url})
         await delay(timeout);
         try {
 
-            const {window: {document}} = await JSDOM.fromURL(url);
+            const {window: {document, close}} = await JSDOM.fromURL(url);
 
             const slug = getSlug(url);
             const slugCategories = getCategories(url);
-            const title = document.querySelector(titleSelector).textContent;
+            const header = document.querySelector(headerSelector).textContent;
+            const title = document.querySelector('title').textContent
+
+            const descriptionElement = document.querySelector('meta[name="description"]');
+            const description = descriptionElement ? descriptionElement.getAttribute('content') : '';
+
+            // Access all <img> elements and correct their src attributes
+            const imgElements = document.querySelectorAll('img');
+            imgElements.forEach((imgElement) => {
+                const currentSrc = imgElement.getAttribute('src');
+                // Perform correction on the currentSrc as needed
+                const correctedSrc = currentSrc.substring(currentSrc.indexOf('/wp-content/'));
+                //console.log({correctedSrc});
+                imgElement.setAttribute('src', correctedSrc);
+            });
+
+            //console.log({description, title})
 
             const scriptElements = document.querySelectorAll('script');
             scriptElements.forEach((script) => script.remove());
 
-            const divElements = document.querySelectorAll('div');
-            divElements.forEach((div) => {
-                if (div.innerHTML.trim() === '') {
-                    div.remove();
-                }
-            });
+            const content =
+                document
+                    .querySelector(contentSelector)
+                    .innerHTML
+                    .replace(/class="[^"]*"/g, '')
+                    .replace(/style="[^"]+"/g, '')
+                    .replace(/id="[^"]+"/g, '');
 
-            const content = document.querySelector(contentSelector).outerHTML;
+            const categories = await slugCategories.reduce(
+                (promise, category) =>
+                    promise.then(async ({id: parent = 0}) =>
+                        await wp.categories().slug(category) ||
+                        await wp.categories().create({slug: category, parent})
+                    ),
+                Promise.resolve()
+            );
 
-            // const categories = await slugCategories.reduce(
-            //     (promise, category) =>
-            //         promise.then(async ({id: parent = 0}) =>
-            //             await wp.categories().slug(category) ||
-            //             await wp.categories().create({slug: category, parent})
-            //         ),
-            //     Promise.resolve()
-            // );
-
-            //console.log({slug, title, content, slugCategories})
+            console.log({slug, content, slugCategories, categories, description, title})
 
             await wp.posts().create({
-                title,
+                title: header,
                 slug,
                 content,
-                status: 'publish'
-            })
+                meta: {yoast_wpseo_metadesc: description, description},
+                status: 'publish',
+            }).then(({id}) => wp.posts().id(id).update({meta: {yoast_wpseo_metadesc: description, description}}));
 
-        } catch (e){
+        } catch (e) {
             console.log(e.message)
         }
 
-    }), Promise.resolve()).finally(() =>     {
+    }), Promise.resolve()).finally(() => {
         console.log('done')
         done()
     });
@@ -84,8 +101,8 @@ taskQueue.process(async (job, done) => {
     // or pass it a result
 });
 
-// taskQueue.on('global:progress', (id, progress) => {
-//     pubSub.publish(TASK_PROGRESS_UPDATED, { taskProgressUpdated: { id, progress } });
-// });
+taskQueue.on('progress', (task, progress) => {
+    pubSub.publish(TASK_PROGRESS_UPDATED, {taskProgressUpdated: {...task.data, progress}});
+});
 
 export default taskQueue;

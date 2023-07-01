@@ -17,7 +17,7 @@ export const typeDefs = gql`
     sitemap: String
     sortBy: String
     status: String
-    titleSelector: String
+    headerSelector: String
     timeout: Int
     endpoint: String
     urls: [String]
@@ -36,7 +36,7 @@ export const typeDefs = gql`
     sitemap: String
     sortBy: String
     status: String
-    titleSelector: String
+    headerSelector: String
     timeout: Int
     endpoint: String
     urls: [String]
@@ -65,8 +65,16 @@ export const resolvers = {
         //     return await Task.findById(args.id);
         // },
         tasks: async () => {
-            const result = await taskQueue.getJobs([]);
-            return result.map(({id, data, _progress}) => ({id, ...data, progress: _progress}))
+            const tasks = await taskQueue.getJobs(['active', 'waiting', 'completed', 'failed']);
+           // console.log({tasks})
+            return tasks.map(({id, data, _progress, status}) => ({id, ...data, progress: _progress, status}))
+
+            // return await Promise.all(
+            //     tasks.map(({id}) => taskQueue.getJob(id).then((({id, data, _progress, _status}) => ({id, ...data, progress: _progress, status: _status}))))
+            // );
+
+            // const tasks = await taskQueue.getJobs();
+            // return tasks.map(({id, data, _progress, status}) => ({id, ...data, progress: _progress, status}))
         },
         task: async (_, args) => {
             const result = await taskQueue.getJob(args.id)
@@ -97,6 +105,7 @@ export const resolvers = {
         //     return deletedTask;
         // },
         createTask: async (_, {data}) => {
+            console.log({data})
             const {id} = await taskQueue.add(data);
             return id;
         },
@@ -113,9 +122,9 @@ export const resolvers = {
             return id;
         }
     },
-    // Subscription: {
-    //     taskProgressUpdated: {
-    //         subscribe: () => pubSub.asyncIterator(TASK_PROGRESS_UPDATED),
-    //     },
-    // },
+    Subscription: {
+        taskProgressUpdated: {
+            subscribe: () => pubSub.asyncIterator([TASK_PROGRESS_UPDATED]),
+        },
+    },
 };

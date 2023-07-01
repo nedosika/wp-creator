@@ -8,7 +8,7 @@ import "./Dashboard.css";
 import {DIALOGS, useDialog} from "contexts/Dialog";
 import {GET_TASKS} from "apollo/queries";
 import {DELETE_TASK} from "apollo/mutations";
-import {TASK_PROGRESS_SUBSCRIPTION} from "apollo/subscriptions";
+//import {TASK_PROGRESS_SUBSCRIPTION} from "apollo/subscriptions";
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;

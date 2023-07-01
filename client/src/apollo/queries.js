@@ -17,6 +17,7 @@ export const GET_TASKS = gql`
             id
             name
             progress
+            status
             urls
         }
     }
