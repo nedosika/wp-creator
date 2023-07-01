@@ -1,37 +1,53 @@
 import React from 'react';
-import {Checkbox, Input, InputNumber, Select, Space} from "antd";
+import {Input, Space, Form, Button} from "antd";
 import {TASK_OPTIONS, useTask} from "dialogs/TaskDialog";
+import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import styles from "./Content.module.css";
 
 const Content = () => {
-    const [{[TASK_OPTIONS.titleSelector]: titleSelector, [TASK_OPTIONS.contentSelector]: contentSelector}, updateTask] = useTask();
+    const [{
+        [TASK_OPTIONS.headerSelector]: headerSelector,
+        [TASK_OPTIONS.contentSelector]: contentSelector,
+        [TASK_OPTIONS.contentReplacers]: contentReplacers
+    }, updateTask] = useTask();
 
-    const handleChange = (key) => ({target:{value}}) => updateTask({[key]: value})
+    const handleChange = (key) => ({target:{value}}) => updateTask({[key]: value});
+
+    const handleChangeReplacers = (index) => ({target:{value}}) => {
+        updateTask({[TASK_OPTIONS.contentReplacers]: [...contentReplacers.slice(0, index), value ,...contentReplacers.slice(index + 1)]})
+    }
+
+    const handleAddReplacer = () => {
+        updateTask({[TASK_OPTIONS.contentReplacers]: [...contentReplacers, '']})
+    }
+
+    const handleRemoveReplacer = (index) => () => {
+        updateTask({[TASK_OPTIONS.contentReplacers]: [...contentReplacers.slice(0, index), ...contentReplacers.slice(index + 1)]})
+    }
 
     return (
         <Space direction='vertical'>
-            <Input addonBefore="Header selector" value={titleSelector} onChange={handleChange(TASK_OPTIONS.headerSelector)}/>
+            <Input addonBefore="Header selector" value={headerSelector} onChange={handleChange(TASK_OPTIONS.headerSelector)}/>
             <Input addonBefore="Content Selector" value={contentSelector} onChange={handleChange(TASK_OPTIONS.contentSelector)}/>
-            {/*<Checkbox>Strong search</Checkbox>*/}
-            {/*<Space>*/}
-            {/*    Sort by:*/}
-            {/*    <Select*/}
-            {/*        defaultValue="Content"*/}
-            {/*        options={[*/}
-            {/*            { value: 'title', label: 'Content' },*/}
-            {/*            { value: 'date', label: 'Date' },*/}
-            {/*        ]}*/}
-            {/*    />*/}
-            {/*</Space>*/}
-            {/*<Space>*/}
-            {/*    Order:*/}
-            {/*    <Select*/}
-            {/*        defaultValue="ASC"*/}
-            {/*        options={[*/}
-            {/*            { value: 'asc', label: 'ASC' },*/}
-            {/*            { value: 'desc', label: 'DESC' },*/}
-            {/*        ]}*/}
-            {/*    />*/}
-            {/*</Space>*/}
+            {contentReplacers.map((value, index) => (
+                <div>
+                    <Input addonBefore="Replacer" value={value} onChange={handleChangeReplacers(index)} style={{width: '87%'}}/>
+                    <MinusCircleOutlined
+                        className={styles.dynamicDeleteButton}
+                        onClick={handleRemoveReplacer(index)}
+                    />
+                </div>
+            ))}
+            <Button
+                type="dashed"
+                style={{
+                    width: '100%',
+                }}
+                icon={<PlusOutlined />}
+                onClick={handleAddReplacer}
+            >
+                Add replacer
+            </Button>
         </Space>
     );
 };

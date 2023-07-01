@@ -17,11 +17,11 @@ taskQueue.process(async (job, done) => {
     const wp = new WpAPI({endpoint, username, password});
     const countUrls = urls.length;
 
-    console.log({job, urls, endpoint, username, password, headerSelector, timeout, contentSelector})
+    //console.log({job, urls, endpoint, username, password, headerSelector, timeout, contentSelector})
 
     urls.reduce((p, url, index, arr) => p.then(async (prev) => {
         job.progress(Math.ceil((index + 1) * 100 / countUrls)).catch((err) => console.log(err));
-        console.log({progress: Math.ceil((index + 1) * 100 / countUrls), url})
+        //console.log({progress: Math.ceil((index + 1) * 100 / countUrls), url})
         await delay(timeout);
         try {
 
@@ -50,8 +50,7 @@ taskQueue.process(async (job, done) => {
             const scriptElements = document.querySelectorAll('script');
             scriptElements.forEach((script) => script.remove());
 
-            const content =
-                document
+            const content = document
                     .querySelector(contentSelector)
                     .innerHTML
                     .replace(/class="[^"]*"/g, '')
