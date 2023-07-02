@@ -7,9 +7,7 @@ import {TASK_OPTIONS, useTask} from "dialogs/TaskDialog";
 const SiteMap = () => {
     const [{[TASK_OPTIONS.onlyHtml]: onlyHtml}, updateTask] = useTask();
 
-    const handleChangeOlyHtml = (event) => updateTask({
-            [TASK_OPTIONS.onlyHtml]: event.target.checked
-        })
+    const handleChangeOlyHtml = (event) => updateTask({[TASK_OPTIONS.onlyHtml]: event.target.checked})
 
     const handleRequest = ({file, onSuccess}) =>
         fileParser(file)

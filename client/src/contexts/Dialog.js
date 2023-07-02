@@ -2,11 +2,13 @@ import {createContext, createElement, useContext, useState} from "react";
 import TaskDialog from "dialogs/TaskDialog";
 import InfoDialog from "dialogs/Info";
 import DeleteDialog from "../dialogs/DeleteDialog";
+import URLsDialog from "../dialogs/URLsDialog";
 
 export const DIALOGS = {
     task: TaskDialog,
     info: InfoDialog,
-    remove: DeleteDialog
+    remove: DeleteDialog,
+    urls: URLsDialog
 }
 
 const DialogContext = createContext({});

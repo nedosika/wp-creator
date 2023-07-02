@@ -116,7 +116,6 @@ const Dashboard = () => {
     //const { data: test } = useSubscription(TASK_PROGRESS_SUBSCRIPTION);
     const initialColumns = useColumns();
 
-    //console.log(test)
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
@@ -147,21 +146,16 @@ const Dashboard = () => {
         }),
     }));
 
-    const handleOpenDialog = () => openDialog({dialog: DIALOGS.task})
+    const handleOpenDialog = () => {
+        openDialog({dialog: DIALOGS.urls})
+        //openDialog({dialog: DIALOGS.task})
+    }
 
     if(loading)
         return null;
 
-    console.log({data})
-
     return (
         <>
-            <Space style={{ marginBottom: 16 }}>
-                <Button>Clear filters</Button>
-                <Button>Clear filters and sorters</Button>
-                <Button onClick={handleOpenDialog}>Add</Button>
-                <Button>Delete</Button>
-            </Space>
             <Table
                 bordered
                 components={{
@@ -171,9 +165,6 @@ const Dashboard = () => {
                 dataSource={data.tasks}
                 rowSelection={rowSelection}
                 rowKey="id"
-                // onRow={(record, rowIndex) => ({
-                //     onClick: (event) => openDialog({dialog: DIALOGS.info}, record),
-                // })}
             />
             <FloatButton onClick={handleOpenDialog} shape='circle' icon={<PlusOutlined />} size="large"/>
         </>

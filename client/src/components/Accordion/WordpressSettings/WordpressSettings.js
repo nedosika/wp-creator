@@ -17,7 +17,7 @@ const WordpressSettings = () => {
         <Space direction='vertical'>
             <Space.Compact>
                 <Input addonBefore="endpoint" value={endpoint} onChange={handleChange(TASK_OPTIONS.endpoint)}/>
-                <Input value={suffix} onChange={handleChange(TASK_OPTIONS.endpointSuffix)}/>
+                <Input value={suffix} onChange={handleChange(TASK_OPTIONS.endpointSuffix)} style={{width: '100px'}}/>
             </Space.Compact>
             <Input placeholder="wp login" prefix={<UserOutlined/>} value={username} onChange={handleChange(TASK_OPTIONS.username)}/>
             <Input.Password

@@ -1,5 +1,4 @@
 import {Collapse, Modal} from "antd";
-import SiteMap from "components/Accordion/SiteMap";
 import Content from "components/Accordion/Content";
 import Categories from "components/Accordion/Categories";
 import React, {createContext, useCallback, useContext, useMemo} from "react";
@@ -66,8 +65,8 @@ const initialState = {
 
 const TaskContext = createContext({});
 
-const TaskDialog = () => {
-    const [task, setTask] = useState(initialState);
+const TaskDialog = ({urls}) => {
+    const [task, setTask] = useState({...initialState, [TASK_OPTIONS.urls]: urls});
     const [createTask] = useMutation(CREATE_TASK, {refetchQueries: [GET_TASKS]});
     const {closeDialog} = useDialog();
 
@@ -106,16 +105,13 @@ const TaskDialog = () => {
                 onCancel={closeDialog}
             >
                 <Collapse accordion>
-                    <Panel header="Sitemap" key="1">
-                        <SiteMap/>
-                    </Panel>
-                    <Panel header="Content" key="2">
+                    <Panel header="Content" key="1">
                         <Content/>
                     </Panel>
-                    <Panel header="Categories" key="3">
+                    <Panel header="Categories" key="2">
                         <Categories/>
                     </Panel>
-                    <Panel header="Wordpress settings" key="4">
+                    <Panel header="Wordpress settings" key="3">
                         <WordpressSettings/>
                     </Panel>
                 </Collapse>

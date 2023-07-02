@@ -30,7 +30,7 @@ const Content = () => {
             <Input addonBefore="Header selector" value={headerSelector} onChange={handleChange(TASK_OPTIONS.headerSelector)}/>
             <Input addonBefore="Content Selector" value={contentSelector} onChange={handleChange(TASK_OPTIONS.contentSelector)}/>
             {contentReplacers.map((value, index) => (
-                <div>
+                <div key={value}>
                     <Input addonBefore="Replacer" value={value} onChange={handleChangeReplacers(index)} style={{width: '87%'}}/>
                     <MinusCircleOutlined
                         className={styles.dynamicDeleteButton}
