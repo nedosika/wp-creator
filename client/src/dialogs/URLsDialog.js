@@ -44,7 +44,7 @@ const UrLsDialog = () => {
             })
             .catch((error) => message.error(error));
 
-    const handleOpenTaskDialog = () => openDialog({dialog: DIALOGS.task, props: {urls: urls.map(({url}) => url)}})
+    const handleOpenTaskDialog = () => openDialog({dialog: DIALOGS.task, props: {urls: selectedRowKeys}})
 
     return (
         <Modal

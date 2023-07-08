@@ -6,6 +6,10 @@ import taskQueue, {TASK_PROGRESS_UPDATED, pubSub} from "../queues/task.js";
 export const typeDefs = gql`
   input TaskInput {
     contentSelector: String
+    contentReplacers: [String]
+    dateSelector: String
+    dateParser: String
+    dateLocale: String
     username: String
     password: String
     description: String
@@ -25,6 +29,10 @@ export const typeDefs = gql`
   type Task {
     id: ID,
     contentSelector: String
+    contentReplacers: [String]
+    dateSelector: String
+    dateParser: String
+    dateLocale: String
     username: String
     password: String
     description: String

@@ -115,8 +115,6 @@ const Dashboard = () => {
     const {loading, data = {}} = useQuery(GET_TASKS, {pollInterval: 500});
     //const { data: test } = useSubscription(TASK_PROGRESS_SUBSCRIPTION);
     const initialColumns = useColumns();
-
-
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [columns, setColumns] = useState(initialColumns);
 
@@ -146,20 +144,33 @@ const Dashboard = () => {
         }),
     }));
 
-    const handleOpenDialog = () => {
-        openDialog({dialog: DIALOGS.urls})
-        //openDialog({dialog: DIALOGS.task})
-    }
+    const handleOpenDialog = () => openDialog({dialog: DIALOGS.urls})
 
     if(loading)
         return null;
 
+    const hasSelected = selectedRowKeys.length > 0;
+
     return (
         <>
+            <div style={{ marginBottom: 10 }}>
+                <Popconfirm
+                    title="Delete the task"
+                    description="Are you sure to delete this task(s)?"
+                    //onConfirm={() => deleteTask({variables: {id}})}
+                    okText="Yes"
+                    cancelText="No"
+                >
+                    <Button danger>Delete</Button>
+                </Popconfirm>
+                <span style={{ marginLeft: 8 }}>
+                    {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                </span>
+            </div>
             <Table
                 bordered
                 components={{
-                    header: {cell: ResizableTitle,},
+                    header: { cell: ResizableTitle }
                 }}
                 columns={mergeColumns}
                 dataSource={data.tasks}

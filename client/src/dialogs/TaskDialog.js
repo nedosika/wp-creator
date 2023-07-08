@@ -14,6 +14,9 @@ const {Panel} = Collapse;
 export const TASK_OPTIONS = {
     endpoint: 'endpoint',
     endpointSuffix: "endpointSuffix",
+    dateSelector: "dateSelector",
+    dateParser: 'dateParser',
+    dateLocale: "dateLocale",
     username: 'login',
     password: 'password',
     headerSelector: 'headerSelector',
@@ -49,7 +52,10 @@ const initialState = {
     [TASK_OPTIONS.password]: '',
     [TASK_OPTIONS.headerSelector]: 'h1',
     [TASK_OPTIONS.contentSelector]: '.post_content',
-    [TASK_OPTIONS.contentReplacers]: [/class="[^"]*"/g, /style="[^"]+"/g, /id="[^"]+"/g],
+    [TASK_OPTIONS.contentReplacers]: ['class="[^"]*"', 'style="[^"]*"', 'id="[^"]*"'],
+    [TASK_OPTIONS.dateSelector]: ".post-date",
+    [TASK_OPTIONS.dateParser]: "MMM DD, YYYY",
+    [TASK_OPTIONS.dateLocale]: "ru",
     [TASK_OPTIONS.isAddCategories]: true,
     [TASK_OPTIONS.progress]: 0,
     [TASK_OPTIONS.timeout]: 1000,
@@ -78,6 +84,10 @@ const TaskDialog = ({urls}) => {
             urls: task[TASK_OPTIONS.urls],
             headerSelector: task[TASK_OPTIONS.headerSelector],
             contentSelector: task[TASK_OPTIONS.contentSelector],
+            contentReplacers: task[TASK_OPTIONS.contentReplacers],
+            dateParser: task[TASK_OPTIONS.dateParser],
+            dateLocale: task[TASK_OPTIONS.dateLocale],
+            dateSelector: task[TASK_OPTIONS.dateSelector],
             isStrongSearch: task[TASK_OPTIONS.isStrongSearch],
             sortBy: task[TASK_OPTIONS.sortBy],
             order: task[TASK_OPTIONS.order],
@@ -91,7 +101,7 @@ const TaskDialog = ({urls}) => {
     const updateTask = useCallback((newTask) => setTask((prevTask) => ({...prevTask, ...newTask})), []);
 
     const handleCreateTask = useCallback(() => {
-        console.log(variables)
+        console.log({variables})
         return createTask({variables}).then(closeDialog);
     }, [closeDialog, createTask, variables]);
 
